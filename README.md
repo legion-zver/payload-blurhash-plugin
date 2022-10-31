@@ -1,4 +1,4 @@
-# payload-blurhash-plugin
+# @itrabbit/payload-blurhash-plugin
 
 Payload CMS plugin for automatic Blurhash encoding of images.
 
