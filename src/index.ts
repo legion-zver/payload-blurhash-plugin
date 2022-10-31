@@ -1,143 +1,86 @@
-import { Config } from 'payload/config';
-import { CollectionConfig } from 'payload/types';
-import { BeforeChangeHook } from 'payload/dist/globals/config/types';
-import * as path from 'path';
+import path from 'path';
 import sharp from 'sharp';
-import { encode } from 'blurhash';
-import { Payload } from 'payload';
-import { Collection } from 'payload/dist/collections/config/types';
+import {encode} from 'blurhash';
+import {Config} from 'payload/config';
+import {CollectionBeforeChangeHook} from 'payload/types';
 
-const getMediaDirectory = (payload: Payload, collection: Collection) => {
-  const staticDir = collection.config.upload.staticDir;
-
-  if (path.isAbsolute(staticDir)) {
-    return staticDir;
-  }
-
-  const configDir = payload.config.paths.configDir;
-
-  return path.join(configDir, staticDir);
-};
-
-export interface BlurhashPluginOptions {
-  /*
-   * Array of collection slugs that the plugin should apply to.
-   * By default, the plugin will apply to all collections with `upload` properties.
-   */
-  collections?: CollectionConfig['slug'][];
-
-  /*
-   * Width to resize the image to prior to computing the blurhash.
-   * Default: 32
-   */
-  width?: number;
-
-  /*
-   * Height to resize the image to prior to computing the blurhash.
-   * Default: 32
-   */
-  height?: number;
-
-  /*
-   * X component count to pass to the Blurhash library.
-   * Default: 3
-   */
-  componentX?: number;
-
-  /*
-   * Y component count to pass to the Blurhash library.
-   * Default: 3
-   */
-  componentY?: number;
-}
+import {BlurhashPluginOptions} from './options';
+import {canComputeBlurhash} from './utils';
 
 const computeBlurhash =
-  ({
-    collections,
-    width = 32,
-    height = 32,
-    componentX = 3,
-    componentY = 3,
-  }: BlurhashPluginOptions = {}) =>
-  (incomingConfig: Config): Config => {
-    const hook: BeforeChangeHook = async ({ data, req }) => {
-      if (!req.collection) {
-        return data;
-      }
-
-      const mediaDir = getMediaDirectory(req.payload, req.collection);
-      const filepath = path.join(mediaDir, data.filename);
-
-      const rawPixels = await sharp(filepath)
-        .resize(width, height)
-        .ensureAlpha(1)
-        .raw()
-        .toBuffer();
-
-      const blurhash = encode(
-        new Uint8ClampedArray(rawPixels),
-        width,
-        height,
-        componentX,
-        componentY,
-      );
-
-      return {
-        ...data,
-        blurhash,
-      };
-    };
-
-    return {
-      ...incomingConfig,
-      collections:
-        incomingConfig.collections?.map((collection) => {
-          if (!collection.upload) {
-            return collection;
-          }
-
-          if (collections && !collections.includes(collection.slug)) {
-            return collection;
-          }
-
-          return {
-            ...collection,
-            fields: [
-              ...collection.fields,
-              {
-                name: 'blurhash',
-                type: 'text',
-              },
-            ],
-            hooks: {
-              ...collection.hooks,
-              beforeChange: [...(collection.hooks?.beforeChange ?? []), hook],
+    ({
+        collections,
+        width = 32,
+        height = 32,
+        componentX = 3,
+        componentY = 3,
+        field = 'blurhash',
+    }: BlurhashPluginOptions = {}) =>
+    (config: Config): Config => {
+        const beforeChangeHook: CollectionBeforeChangeHook = async ({data, req}) => {
+            try {
+                const uploaded = req?.files?.file;
+                if (uploaded && canComputeBlurhash(uploaded.mimetype)) {
+                    const pixels = await sharp(uploaded.data ? uploaded.data : uploaded.tempFilePath)
+                        .resize(width, height)
+                        .ensureAlpha(1)
+                        .raw()
+                        .toBuffer();
+                    if (pixels.length > 0) {
+                        return {
+                            ...data,
+                            blurhash: encode(new Uint8ClampedArray(pixels), width, height, componentX, componentY),
+                        };
+                    }
+                }
+            } catch (e) {
+                req.payload.logger.warn(e, 'Fail compute blurhash');
+            }
+            return data;
+        };
+        return {
+            ...config,
+            collections:
+                config.collections?.map((collection) => {
+                    if (!collection.upload) {
+                        return collection;
+                    }
+                    if (collections && !collections.includes(collection.slug)) {
+                        return collection;
+                    }
+                    return {
+                        ...collection,
+                        fields: [
+                            ...(collection.fields || []).filter((v: any) => v.name !== field),
+                            {
+                                name: field,
+                                type: 'text',
+                            },
+                        ],
+                        hooks: {
+                            ...collection.hooks,
+                            beforeChange: [...(collection.hooks?.beforeChange ?? []), beforeChangeHook],
+                        },
+                    };
+                }) ?? [],
+            admin: {
+                ...config.admin,
+                webpack: (webpackConfig) => {
+                    const modifiedConfig = {
+                        ...webpackConfig,
+                        resolve: {
+                            ...webpackConfig.resolve,
+                            alias: {
+                                ...webpackConfig.resolve?.alias,
+                                '@itrabbit/payload-blurhash-plugin/options': path.resolve(__dirname, './options'),
+                                '@itrabbit/payload-blurhash-plugin': path.resolve(__dirname, './mock'),
+                            },
+                        },
+                    };
+                    return config.admin?.webpack?.(modifiedConfig) ?? modifiedConfig;
+                },
             },
-          };
-        }) ?? [],
-      admin: {
-        ...incomingConfig.admin,
-        webpack: (webpackConfig) => {
-          const modifiedConfig = {
-            ...webpackConfig,
-            resolve: {
-              ...webpackConfig.resolve,
-              alias: {
-                ...webpackConfig.resolve?.alias,
-                'payload-blurhash-plugin': path.resolve(
-                  __dirname,
-                  './mock-plugin',
-                ),
-              },
-            },
-          };
-
-          return (
-            incomingConfig.admin?.webpack?.(modifiedConfig) ?? modifiedConfig
-          );
-        },
-      },
+        };
     };
-  };
 
 export default computeBlurhash;

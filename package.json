@@ -1,33 +1,34 @@
 {
-  "name": "payload-blurhash-plugin",
-  "version": "1.0.3",
-  "description": "Payload CMS plugin for automatic Blurhash encoding of images",
-  "main": "lib/index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/invakid404/payload-blurhash-plugin.git"
-  },
-  "author": "Tsvetomir Bonev <invakid404@riseup.net>",
-  "license": "Unlicense",
-  "scripts": {
-    "build": "tsc",
-    "format": "prettier --write \"src/**/*.ts\"",
-    "prepare": "yarn build"
-  },
-  "files": [
-    "lib/**/*"
-  ],
-  "dependencies": {
-    "blurhash": "^1.1.5"
-  },
-  "peerDependencies": {
-    "sharp": "0.x"
-  },
-  "devDependencies": {
-    "@types/node": "^18.6.3",
-    "@types/sharp": "^0.30.2",
-    "payload": "^1.0.11",
-    "prettier": "^2.6.2",
-    "typescript": "^4.7.2"
-  }
+    "name": "@itrabbit/payload-blurhash-plugin",
+    "version": "1.0.4",
+    "description": "Payload CMS plugin for automatic Blurhash encoding of images",
+    "main": "lib/index.js",
+    "repository": {
+        "type": "git",
+        "url": "git+ssh://git@github.com:legion-zver/payload-blurhash-plugin.git"
+    },
+    "author": "Tsvetomir Bonev <invakid404@riseup.net>, Alexander Garin <garin1221@yandex.ru>",
+    "license": "Unlicense",
+    "scripts": {
+        "build": "tsc",
+        "format": "prettier --write \"src/**/*.ts\"",
+        "prepare": "yarn build"
+    },
+    "files": [
+        "lib/**/*"
+    ],
+    "dependencies": {
+        "blurhash": "^2.0.4"
+    },
+    "peerDependencies": {
+        "sharp": "0.x"
+    },
+    "devDependencies": {
+        "@types/express-fileupload": "^1.4.1",
+        "@types/sharp": "^0.31.0",
+        "@types/node": "^18.11.8",
+        "typescript": "^4.8.4",
+        "prettier": "^2.7.1",
+        "payload": "^1.1.18"
+    }
 }

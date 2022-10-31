@@ -1,5 +1,5 @@
 const plugin = () => (config: any) => {
-  return config;
+    return config;
 };
 
 export default plugin;
