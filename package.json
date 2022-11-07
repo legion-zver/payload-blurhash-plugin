@@ -1,6 +1,6 @@
 {
     "name": "@itrabbit/payload-blurhash-plugin",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "description": "Payload CMS plugin for automatic Blurhash encoding of images",
     "main": "lib/index.js",
     "repository": {

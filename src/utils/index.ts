@@ -10,7 +10,7 @@ export function rebuildCollections(
         return collections;
     }
     return collections.map((collection) => {
-        if (!collection.upload || !(slugs && slugs.includes(collection.slug))) {
+        if (!collection.upload || (slugs && !slugs.includes(collection.slug))) {
             return collection;
         }
         return {
