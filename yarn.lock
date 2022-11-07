@@ -1767,10 +1767,10 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.6.3.tgz#4e4a95b6fe44014563ceb514b2598b3e623d1c98"
   integrity sha512-6qKpDtoaYLM+5+AFChLhHermMQxc3TOEFIDzrZLPRGHPrLEwqFkkT5Kx3ju05g6X7uDPazz3jHbKPX0KzCjntg==
 
-"@types/node@^18.11.8":
-  version "18.11.8"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.11.8.tgz#16d222a58d4363a2a359656dd20b28414de5d265"
-  integrity sha512-uGwPWlE0Hj972KkHtCDVwZ8O39GmyjfMane1Z3GUBGGnkZ2USDq7SxLpVIiIHpweY9DS0QTDH0Nw7RNBsAAZ5A==
+"@types/node@^18.11.9":
+  version "18.11.9"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.11.9.tgz#02d013de7058cea16d36168ef2fc653464cfbad4"
+  integrity sha512-CRpX21/kGdzjOpFsZSkcrXMGIBWMGNIHXXBVFSH+ggkftxg+XYP20TESbh+zFvFj3EQOl5byk0HTRn1IL6hbqg==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.1"
@@ -6636,10 +6636,10 @@ pause@0.0.1:
   resolved "https://registry.npmjs.org/pause/-/pause-0.0.1.tgz"
   integrity "sha1-HUCLP9t2kjuVQ9lvtMnf1TXZy10= sha512-KG8UEiEVkR3wGEb4m5yZkVCzigAD+cVEJck2CzYZO37ZGJfctvVptVO192MwrtPhzONn6go8ylnOdMhKqi4nfg=="
 
-payload@^1.1.18:
-  version "1.1.18"
-  resolved "https://registry.yarnpkg.com/payload/-/payload-1.1.18.tgz#028a3e62d0cc1a782404572837e638d130c07baf"
-  integrity sha512-16RtAPUeIeCSxuFEz+7hG6ygRITmCR9I/sqsJMJ76b3okpiC47g4ZbuKKnsImcZb5LQXecwtHjq+MKFlq0F6vQ==
+payload@^1.1.21:
+  version "1.1.21"
+  resolved "https://registry.yarnpkg.com/payload/-/payload-1.1.21.tgz#03f9da59b93f4062eb6757156e94074b7aaec0b9"
+  integrity sha512-2NS/HFVwwIP1Mbx3h//vlnDA9fOAje9pkPDmQTrMwvGlSWxpYipQaUdtvva6fmrcgl/kq92g3jtNyDSOyOLoaw==
   dependencies:
     "@babel/cli" "^7.12.8"
     "@babel/core" "^7.11.6"

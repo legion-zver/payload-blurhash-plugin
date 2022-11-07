@@ -5,18 +5,22 @@ import {Config} from 'payload/config';
 import {CollectionBeforeChangeHook} from 'payload/types';
 
 import {BlurhashPluginOptions} from './options';
-import {canComputeBlurhash} from './utils';
+import {DEFAULT_FIELD_NAME} from './constants';
+import {rebuildCollections} from './utils';
 
-const computeBlurhash =
-    ({
-        collections,
-        width = 32,
-        height = 32,
-        componentX = 3,
-        componentY = 3,
-        field = 'blurhash',
-    }: BlurhashPluginOptions = {}) =>
-    (config: Config): Config => {
+function canComputeBlurhash(mimeType: string): boolean {
+    return mimeType.startsWith('image/');
+}
+
+function computeBlurhash({
+    collections,
+    field = DEFAULT_FIELD_NAME,
+    width = 32,
+    height = 32,
+    componentX = 3,
+    componentY = 3,
+}: BlurhashPluginOptions = {}) {
+    return (config: Config): Config => {
         const beforeChangeHook: CollectionBeforeChangeHook = async ({data, req}) => {
             try {
                 const uploaded = req?.files?.file;
@@ -40,29 +44,7 @@ const computeBlurhash =
         };
         return {
             ...config,
-            collections:
-                config.collections?.map((collection) => {
-                    if (!collection.upload) {
-                        return collection;
-                    }
-                    if (collections && !collections.includes(collection.slug)) {
-                        return collection;
-                    }
-                    return {
-                        ...collection,
-                        fields: [
-                            ...(collection.fields || []).filter((v: any) => v.name !== field),
-                            {
-                                name: field,
-                                type: 'text',
-                            },
-                        ],
-                        hooks: {
-                            ...collection.hooks,
-                            beforeChange: [...(collection.hooks?.beforeChange ?? []), beforeChangeHook],
-                        },
-                    };
-                }) ?? [],
+            collections: rebuildCollections(config.collections ?? [], collections, field, beforeChangeHook),
             admin: {
                 ...config.admin,
                 webpack: (webpackConfig) => {
@@ -82,5 +64,6 @@ const computeBlurhash =
             },
         };
     };
+}
 
 export default computeBlurhash;

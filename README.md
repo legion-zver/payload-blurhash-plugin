@@ -26,7 +26,7 @@ Optionally, you can pass the following options to tweak the behavior of the plug
 export interface BlurhashPluginOptions {
     /*
      * Array of collection slugs that the plugin should apply to.
-     * The plugin will apply only collections with `upload` properties.
+     * The plugin will apply only utils with `upload` properties.
      */
     collections?: CollectionConfig['slug'][];
 
